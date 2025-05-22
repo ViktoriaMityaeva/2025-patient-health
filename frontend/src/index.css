@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Montserrat';
+  src: local('Montserrat'),
+  url('./fonts/Montserrat/Montserrat-Black.ttf') format('truetype');
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  monospace;
+}
+
+@layer base {
+  :root {
+    --primary: theme['--primary'];
+    --secondary: #1c1c34;
+    --text: #161625;
+    --background-start: #1c1c34;
+    --background-middle: #161625;
+    --background-end: #2b2970;
+    --white: #ffffff;
+    --button: #2b2970;
+    --card: #c7d3fe;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-theme {
+    background-image: linear-gradient(
+            to bottom right,
+            var(--background-start),
+            var(--background-middle),
+            var(--background-end)
+    );
+  }
+  .bg-card { background-color: var(--card); }
+  .bg-button { background-color: var(--button); }
+  .text-text { color: var(--text); }
+  .text-secondary { color: var(--secondary); }
+  .text-primary { color: var(--primary); }
+  .border-secondary { border-color: var(--secondary); }
+  .ring-primary { --tw-ring-color: var(--primary); }
+  .focus\:ring-primary:focus { --tw-ring-color: var(--primary); }
+  .focus\:border-primary:focus { border-color: var(--primary); }
+  .hover\:bg-secondary:hover { background-color: var(--secondary); }
+  .hover\:text-primary\/80:hover { color: color-mix(in srgb, var(--primary) 80%, transparent); }
+  .hover\:bg-button\/80:hover { background-color: color-mix(in srgb, var(--button) 80%, transparent); }
+}
