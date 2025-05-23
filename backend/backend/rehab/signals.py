@@ -28,30 +28,3 @@ def create_medication_records(sender, instance, created, **kwargs):
                     is_notify_tg=False  # По умолчанию уведомление не отправлено
                 )
 
-@receiver(post_save, sender=PatientMeasure)
-def build_regression_model(sender, instance, created, **kwargs):
-    if created:
-        # Получаем все показатели для текущей реабилитации
-        measurements = PatientMeasure.objects.filter(rehab=instance.rehab)
-
-        # Преобразуем данные в DataFrame
-        data = {
-            'value': [m.value for m in measurements],
-            'recorded_at': [m.recorded_at.timestamp() for m in measurements]  # Преобразуем время в timestamp
-        }
-        df = pd.DataFrame(data)
-
-        # Проверяем, достаточно ли данных для обучения модели
-        if len(df) < 2:
-            return  # Не хватает данных для построения модели
-
-        # Обучаем регрессионную модель
-        X = df[['recorded_at']]  # Используем время как признак
-        y = df['value']  # Значение показателя
-
-        model = LinearRegression()
-        model.fit(X, y)
-
-        # Здесь сохраняем модель для предсказаний Выключена в целях экономии нагрузки
-        # import joblib
-        # joblib.dump(model, 'regression_model.pkl')

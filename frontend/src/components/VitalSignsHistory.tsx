@@ -20,7 +20,7 @@ export const VitalSignsHistory: React.FC<Props> = ({ selectedId, vitalSigns, the
 
 	const ItemLog = ({ sign }: { sign: VitalSign }) => (
 		<>
-			{sign.records.map((record, index) => {
+			{[...sign.records].reverse().map((record, index) => {
 				if (selectedId !== sign.uid) return;
 
 				const handleClick = () => {
@@ -58,6 +58,13 @@ export const VitalSignsHistory: React.FC<Props> = ({ selectedId, vitalSigns, the
 										{format(new Date(record.recorded_at), 'dd.MM.yyyy HH:mm')}
 									</p>
 								</div>
+
+								<span
+									className="font-medium"
+									style={{ color: !record.is_crytical ? theme['--text'] : 'red' }}
+								>
+									{record.value}
+								</span>
 							</div>
 
 							{record.photo &&
@@ -71,6 +78,8 @@ export const VitalSignsHistory: React.FC<Props> = ({ selectedId, vitalSigns, the
 			})}
 		</>
 	);
+
+	console.log(vitalSigns);
 
 	return (
 		<>

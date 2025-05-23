@@ -15,3 +15,7 @@ export interface ServerData<T> {
 	error: ServerError;
 	data?: T;
 }
+
+export interface ChatResponse {
+	answer: string;
+}

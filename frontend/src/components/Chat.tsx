@@ -4,6 +4,9 @@ import { ChatMessage } from '@store/mainState/interface';
 import type { Theme } from '@theme/Theme.model';
 import mainState from '@store/mainState/mainState';
 import { observer } from 'mobx-react-lite';
+import { apiPost } from '@api/api';
+import { ChatResponse } from '@api/api.interface';
+import { serverPath } from '@helpers/functions/connect';
 
 interface Props {
 	theme: Theme;
@@ -16,20 +19,41 @@ export const Chat: React.FC<Props> = observer(({ theme, personName = 'Собес
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [newMessage, setNewMessage] = useState('');
+	const [isLoading, setIsLoading] = useState(false);
 
-	const handleSend = () => {
+	const handleSend = async () => {
 		if (!newMessage.trim()) return;
 
-		const message: ChatMessage = {
+		const userMessage: ChatMessage = {
 			id: Date.now().toString(),
-			sender: isDoctor ? 'doctor' : 'patient',
+			sender: isDoctor ? 'doctorAI' : 'patient',
 			message: newMessage.trim(),
 			timestamp: new Date().toISOString(),
 			read: false
 		};
 
-		setMessages(message);
+		setMessages(userMessage);
 		setNewMessage('');
+		setIsLoading(true);
+
+		try {
+			const response = await apiPost<ChatResponse>(`https://${serverPath}/api/ask/`, { question: newMessage.trim() }, { answer: '' });
+			
+			if (response.data?.answer) {
+				const botMessage: ChatMessage = {
+					id: (Date.now() + 1).toString(),
+					sender: 'doctorAI',
+					message: response.data.answer,
+					timestamp: new Date().toISOString(),
+					read: false
+				};
+				setMessages(botMessage);
+			}
+		} catch (error) {
+			console.error('Error sending message:', error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -71,12 +95,12 @@ export const Chat: React.FC<Props> = observer(({ theme, personName = 'Собес
 							<div
 								key={msg.id}
 								className={`flex ${
-									(isDoctor ? msg.sender === 'doctor' : msg.sender === 'patient') ? 'justify-end' : 'justify-start'
+									(isDoctor ? msg.sender === 'doctorAI' : msg.sender === 'patient') ? 'justify-end' : 'justify-start'
 								}`}
 							>
 								<div
 									className={`max-w-[80%] rounded-lg p-3 ${
-										(isDoctor ? msg.sender === 'doctor' : msg.sender === 'patient') ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
+										(isDoctor ? msg.sender === 'doctorAI' : msg.sender === 'patient') ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
 									}`}
 								>
 									<p className="text-sm">{msg.message}</p>
@@ -110,10 +134,11 @@ export const Chat: React.FC<Props> = observer(({ theme, personName = 'Собес
 									border: `1px solid ${theme['--secondary']}`,
 								}}
 								rows={1}
+								disabled={isLoading}
 							/>
 							<button
 								onClick={handleSend}
-								disabled={!newMessage.trim()}
+								disabled={!newMessage.trim() || isLoading}
 								className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								<Send className="w-5 h-5" />

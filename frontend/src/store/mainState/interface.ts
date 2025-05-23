@@ -18,6 +18,7 @@ export interface MeasureRecords {
     is_crytical?: boolean;
     recorded_at: Date;
     photo?: string;
+    value?: string;
 }
 
 export interface VitalSign {
@@ -67,7 +68,7 @@ export interface MedicalRecord {
 
 export interface ChatMessage {
     id: string;
-    sender: 'doctor' | 'patient';
+    sender: 'doctorAI' | 'patient';
     message: string;
     timestamp: string;
     read: boolean;

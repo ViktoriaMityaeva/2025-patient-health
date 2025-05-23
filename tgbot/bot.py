@@ -35,7 +35,20 @@ async def echo(message: types.Message):
                     else:
                         await message.reply(f"Для авторизации пришлите код из вашего личного кабинета:\n{protocol}://{domain}")
             elif response.status == 200:
-                await message.reply("Передаю доктору.")
+                # Пользователь авторизован, пробуем отправить вопрос на backend
+                try:
+                    payload = {"question": text}
+                    ask_url = f'{protocol}://{domain}/api/ask/?tg_id={message.from_user.id}'
+                    async with session.post(ask_url, ssl=False, json=payload) as ask_response:
+                        if ask_response.status == 200:
+                            data = await ask_response.json()
+                            answer = data.get('answer') or data.get('error') or 'Нет ответа от сервера.'
+                            await message.reply(answer)
+                        else:
+                            err = await ask_response.text()
+                            await message.reply(f"Ошибка при получении ответа: {err}")
+                except Exception as e:
+                    await message.reply(f"Ошибка при обращении к серверу: {str(e)}")
 
 @dp.callback_query_handler(lambda c: c.data.startswith('medication_'))
 async def process_callback_button(callback_query: types.CallbackQuery):

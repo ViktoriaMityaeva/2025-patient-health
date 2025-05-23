@@ -1,12 +1,12 @@
 import connectState from '@store/connectState/connectState';
 
-// export const serverPath = 'dr-ai.aizavod.ru';
+export const serverPath = 'dr-ai.aizavod.ru';
 // export const serverPath = 'turbohub';
-export const serverPath = 'localhost';
+// export const serverPath = 'localhost';
 
 export const setConnections = () => {
-	const mainPathAccount = `http://${serverPath}/auth-api/`;
-	const mainPath = `http://${serverPath}/api/`;
+	const mainPathAccount = `https://${serverPath}/auth-api/`;
+	const mainPath = `https://${serverPath}/api/`;
 
 	//Аккаунт
 	connectState.setLinkLogin(`${mainPathAccount}login/`);

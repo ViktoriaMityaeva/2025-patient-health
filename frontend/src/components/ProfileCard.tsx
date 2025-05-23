@@ -14,7 +14,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ data, isDoctor = false
 	const { first_name, last_name, email, uid } = user;
 
 	const handleTelegram = () => {
-		window.open('https://t.me/aidoctor71bot', '_blank');
+		window.open('https://t.me/doc71bot', '_blank');
 	};
 
 	return (
